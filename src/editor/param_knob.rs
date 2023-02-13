@@ -41,8 +41,9 @@ impl ParamKnob {
                     Knob::custom(
                         cx,
                         0.5,
-                        params
-                            .map(move |params| params_to_param(params).default_normalized_value()),
+                        params.map(move |params| {
+                            params_to_param(params).unmodulated_normalized_value()
+                        }),
                         move |cx, lens| {
                             TickKnob::new(
                                 cx,
@@ -67,13 +68,13 @@ impl ParamKnob {
                             .class("track")
                         },
                     )
-                    .on_press_down(move |cx| {
+                    .on_mouse_down(move |cx, _button| {
                         cx.emit(ParamEvent::BeginSetParam);
                     })
                     .on_changing(move |cx, val| {
                         cx.emit(ParamEvent::SetParam(val));
                     })
-                    .on_press(move |cx| {
+                    .on_mouse_up(move |cx, _button| {
                         cx.emit(ParamEvent::EndSetParam);
                     });
                 });
