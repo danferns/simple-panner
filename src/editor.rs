@@ -35,14 +35,6 @@ knob .track {
     background-color: #696969;
 }
 
-.label_knob {
-    border-width: 2px;
-    border-color: #28282b;
-    background-color: #000000;
-    col-between: 10px;
-    child-space: 1s;
-}
-
 "#;
 
 #[derive(Lens)]
