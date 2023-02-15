@@ -9,32 +9,6 @@ use self::param_knob::ParamKnob;
 
 use crate::SimplePannerParams;
 
-const STYLE: &str = r#"
-    label {
-        width: 200px;
-        height: 30px;
-        child-space: 1s;
-        font-size: 20;
-        color: #C2C2C2;
-    }
-    
-    knob {
-        width: 100px;
-        height: 100px;
-    }
-    
-    knob .track {
-        background-color: #ffb74d;
-    }
-    .label_knob {
-        border-width: 2px;
-        border-color: #28282b;
-        background-color: #000000;
-        col-between: 10px;
-        child-space: 1s;
-    }
-"#;
-
 #[derive(Lens)]
 struct Data {
     params: Arc<SimplePannerParams>,
@@ -43,7 +17,7 @@ struct Data {
 impl Model for Data {}
 
 pub(crate) fn default_state() -> Arc<ViziaState> {
-    ViziaState::from_size(200, 150)
+    ViziaState::from_size(200, 180)
 }
 
 pub(crate) fn create(
@@ -54,7 +28,8 @@ pub(crate) fn create(
         assets::register_noto_sans_light(cx);
         assets::register_noto_sans_thin(cx);
 
-        cx.add_theme(STYLE);
+        cx.add_stylesheet("src/styles/main.css")
+            .expect("main.css not found.");
 
         Data {
             params: params.clone(),
@@ -64,7 +39,8 @@ pub(crate) fn create(
         ResizeHandle::new(cx);
 
         VStack::new(cx, |cx| {
-            ParamKnob::new(cx, Data::params, |p| &p.gain);
-        });
+            ParamKnob::new(cx, Data::params, |p| &p.pan);
+        })
+        .class("main");
     })
 }
