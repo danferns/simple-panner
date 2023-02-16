@@ -156,7 +156,7 @@ impl Vst3Plugin for SimplePanner {
 
     // And don't forget to change these categories, see the docstring on `VST3_CATEGORIES` for more
     // information
-    const VST3_CATEGORIES: &'static str = "Fx|Dynamics";
+    const VST3_CATEGORIES: &'static str = "Fx|Spatial";
 }
 
 nih_export_clap!(SimplePanner);
