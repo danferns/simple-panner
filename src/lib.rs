@@ -2,10 +2,6 @@ use nih_plug::prelude::*;
 use nih_plug_vizia::ViziaState;
 use std::sync::Arc;
 
-// This is a shortened version of the gain example with most comments removed, check out
-// https://github.com/robbert-vdh/nih-plug/blob/master/plugins/examples/gain/src/lib.rs to get
-// started
-
 mod editor;
 pub struct SimplePanner {
     params: Arc<SimplePannerParams>,
@@ -37,16 +33,8 @@ impl Default for SimplePannerParams {
     fn default() -> Self {
         Self {
             editor_state: editor::default_state(),
-            // This gain is stored as linear gain. NIH-plug comes with useful conversion functions
-            // to treat these kinds of parameters as if we were dealing with decibels. Storing this
-            // as decibels is easier to work with, but requires a conversion for every sample.
             pan: FloatParam::new("Pan", 0., FloatRange::Linear { min: -1., max: 1. })
-                // Because the gain parameter is stored as linear gain instead of storing the value as
-                // decibels, we need logarithmic smoothing
                 .with_smoother(SmoothingStyle::Linear(10.0))
-                // There are many predefined formatters we can use here. If the gain was stored as
-                // decibels instead of as a linear gain value, we could have also used the
-                // `.with_step_size(0.1)` function to get internal rounding.
                 .with_value_to_string(formatters::v2s_f32_panning())
                 .with_string_to_value(formatters::s2v_f32_panning()),
 
@@ -124,12 +112,11 @@ impl Plugin for SimplePanner {
             let pan = self.params.pan.smoothed.next();
             let mix = self.params.mix.smoothed.next() / 2.;
 
-            let left = unsafe { channel_samples.get_unchecked_mut(0).clone() };
-            let right = unsafe { channel_samples.get_unchecked_mut(1).clone() };
-
             let x = std::f32::consts::PI * (pan + 1.) / 4.;
 
             unsafe {
+                let left = channel_samples.get_unchecked_mut(0).clone();
+                let right = channel_samples.get_unchecked_mut(1).clone();
                 *channel_samples.get_unchecked_mut(0) =
                     x.cos() * std::f32::consts::SQRT_2 * ((1. - mix) * left + mix * right);
                 *channel_samples.get_unchecked_mut(1) =
