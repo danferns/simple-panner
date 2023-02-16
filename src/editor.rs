@@ -14,9 +14,11 @@ const STYLE: &str = r#"
     background-color: #222222;
 }
 
+.param_knob {
+    width: 150px;
+}
+
 label {
-    width: 200px;
-    height: 30px;
     child-space: 1s;
     font-size: 20;
     color: #c2c2c2;
@@ -28,7 +30,7 @@ knob {
 }
 
 knob .track {
-    background-color: #ffb74d;
+    background-color: #92facf;
 }
 
 .tick {
@@ -45,7 +47,7 @@ struct Data {
 impl Model for Data {}
 
 pub(crate) fn default_state() -> Arc<ViziaState> {
-    ViziaState::from_size(200, 180)
+    ViziaState::from_size(350, 200)
 }
 
 pub(crate) fn create(
@@ -65,9 +67,11 @@ pub(crate) fn create(
 
         ResizeHandle::new(cx);
 
-        VStack::new(cx, |cx| {
-            ParamKnob::new(cx, Data::params, |p| &p.pan);
+        HStack::new(cx, |cx| {
+            ParamKnob::new(cx, Data::params, |p| &p.pan, true);
+            ParamKnob::new(cx, Data::params, |p| &p.mix, false);
         })
-        .class("main");
+        .class("main")
+        .child_space(Stretch(1.));
     })
 }

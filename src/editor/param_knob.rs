@@ -19,6 +19,7 @@ impl ParamKnob {
         cx: &mut Context,
         params: L,
         params_to_param: FMap,
+        centered: bool,
     ) -> Handle<Self>
     where
         L: Lens<Target = Params> + Clone + Copy,
@@ -31,11 +32,11 @@ impl ParamKnob {
         }
         .build(
             cx,
-            ParamWidgetBase::build_view(params, params_to_param, move |cx, _param_data| {
+            ParamWidgetBase::build_view(params, params_to_param, move |cx, param_data| {
                 VStack::new(cx, |cx| {
                     Knob::custom(
                         cx,
-                        0.5,
+                        param_data.param().default_normalized_value(),
                         params.map(move |params| {
                             params_to_param(params).unmodulated_normalized_value()
                         }),
@@ -52,7 +53,7 @@ impl ParamKnob {
                             .class("tick");
                             ArcTrack::new(
                                 cx,
-                                true,
+                                centered,
                                 Percentage(95.0),
                                 Percentage(10.),
                                 -135.,
@@ -94,7 +95,8 @@ impl ParamKnob {
                     )
                     .space(Stretch(1.0))
                     .top(Stretch(0.));
-                });
+                })
+                .class("param_knob");
             }),
         )
     }

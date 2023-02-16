@@ -21,6 +21,8 @@ pub struct SimplePannerParams {
     editor_state: Arc<ViziaState>,
     #[id = "pan"]
     pub pan: FloatParam,
+    #[id = "mix"]
+    pub mix: FloatParam,
 }
 
 impl Default for SimplePanner {
@@ -47,6 +49,12 @@ impl Default for SimplePannerParams {
                 // `.with_step_size(0.1)` function to get internal rounding.
                 .with_value_to_string(formatters::v2s_f32_panning())
                 .with_string_to_value(formatters::s2v_f32_panning()),
+
+            mix: FloatParam::new("Channel Mix", 0., FloatRange::Linear { min: 0., max: 1. })
+                .with_smoother(SmoothingStyle::Linear(10.0))
+                .with_unit("%")
+                .with_value_to_string(formatters::v2s_f32_percentage(0))
+                .with_string_to_value(formatters::s2v_f32_percentage()),
         }
     }
 }
@@ -84,8 +92,8 @@ impl Plugin for SimplePanner {
     }
 
     fn accepts_bus_config(&self, config: &BusConfig) -> bool {
-        // This works with any symmetrical IO layout
-        config.num_input_channels == config.num_output_channels && config.num_input_channels > 0
+        // This works with stereo IO
+        config.num_input_channels == config.num_output_channels && config.num_input_channels == 2
     }
 
     fn initialize(
@@ -111,12 +119,21 @@ impl Plugin for SimplePanner {
         _aux: &mut AuxiliaryBuffers,
         _context: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
-        for channel_samples in buffer.iter_samples() {
+        for mut channel_samples in buffer.iter_samples() {
             // Smoothing is optionally built into the parameters themselves
-            let gain = self.params.pan.smoothed.next();
+            let pan = self.params.pan.smoothed.next();
+            let mix = self.params.mix.smoothed.next() / 2.;
 
-            for sample in channel_samples {
-                *sample *= gain;
+            let left = unsafe { channel_samples.get_unchecked_mut(0).clone() };
+            let right = unsafe { channel_samples.get_unchecked_mut(1).clone() };
+
+            let x = std::f32::consts::PI * (pan + 1.) / 4.;
+
+            unsafe {
+                *channel_samples.get_unchecked_mut(0) =
+                    x.cos() * std::f32::consts::SQRT_2 * ((1. - mix) * left + mix * right);
+                *channel_samples.get_unchecked_mut(1) =
+                    x.sin() * std::f32::consts::SQRT_2 * ((1. - mix) * right + mix * left);
             }
         }
 
