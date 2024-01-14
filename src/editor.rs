@@ -29,12 +29,21 @@ knob {
     height: 100px;
 }
 
-knob .track {
+knob .knob-track {
     background-color: #92facf;
 }
 
+.track {
+    color: #92facf;
+    background-color: #363636;
+}
+
 .tick {
-    background-color: #696969;
+    background-color: #363636;
+}
+
+.tick {
+    color: #696969;
 }
 
 "#;
@@ -47,7 +56,7 @@ struct Data {
 impl Model for Data {}
 
 pub(crate) fn default_state() -> Arc<ViziaState> {
-    ViziaState::from_size(350, 200)
+    ViziaState::new(|| (350, 200))
 }
 
 pub(crate) fn create(
@@ -58,20 +67,20 @@ pub(crate) fn create(
         assets::register_noto_sans_light(cx);
         assets::register_noto_sans_thin(cx);
 
-        cx.add_theme(STYLE);
+        cx.add_stylesheet(STYLE).expect("Failed to add stylesheet");
 
         Data {
             params: params.clone(),
         }
         .build(cx);
 
-        ResizeHandle::new(cx);
-
         HStack::new(cx, |cx| {
             ParamKnob::new(cx, Data::params, |p| &p.pan, true);
             ParamKnob::new(cx, Data::params, |p| &p.focus, false);
         })
-        .class("main")
-        .child_space(Stretch(1.));
+        .child_space(Stretch(0.25))
+        .class("main");
+
+        ResizeHandle::new(cx);
     })
 }
