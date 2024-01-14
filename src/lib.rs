@@ -18,7 +18,7 @@ pub struct SimplePannerParams {
     #[id = "pan"]
     pub pan: FloatParam,
     #[id = "mix"]
-    pub mix: FloatParam,
+    pub focus: FloatParam,
 }
 
 impl Default for SimplePanner {
@@ -38,7 +38,7 @@ impl Default for SimplePannerParams {
                 .with_value_to_string(formatters::v2s_f32_panning())
                 .with_string_to_value(formatters::s2v_f32_panning()),
 
-            mix: FloatParam::new("Channel Mix", 0., FloatRange::Linear { min: 0., max: 1. })
+            focus: FloatParam::new("Focus", 0., FloatRange::Linear { min: 0., max: 1. })
                 .with_smoother(SmoothingStyle::Linear(10.0))
                 .with_unit("%")
                 .with_value_to_string(formatters::v2s_f32_percentage(0))
@@ -110,7 +110,7 @@ impl Plugin for SimplePanner {
         for mut channel_samples in buffer.iter_samples() {
             // Smoothing is optionally built into the parameters themselves
             let pan = self.params.pan.smoothed.next();
-            let mix = self.params.mix.smoothed.next() / 2.;
+            let mix = self.params.focus.smoothed.next() / 2.;
 
             let x = std::f32::consts::PI * (pan + 1.) / 4.;
 

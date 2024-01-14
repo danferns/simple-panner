@@ -6,11 +6,11 @@ Simple Panner is a stereo panning plugin that I built as a way to learn plugin d
 
 ## How to use
 
-Simple Panner has two parameters, `Pan` and `Channel Mix`.
+Simple Panner has two parameters, `Pan` and `Focus`.
 
 `Pan` controls the gain of the left and right channels.
 
-`Channel Mix` controls the mixing of the two channels _before_ panning the sound.
+`Focus` controls the mixing of the two channels _before_ panning the sound.
 
 -   When set to `0%`, audio is not mixed between channels and panning will purely control the gain of each channel. This will keep the sound wide, but still allow you to control the stereo balance of the track.
 

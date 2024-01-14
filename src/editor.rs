@@ -69,7 +69,7 @@ pub(crate) fn create(
 
         HStack::new(cx, |cx| {
             ParamKnob::new(cx, Data::params, |p| &p.pan, true);
-            ParamKnob::new(cx, Data::params, |p| &p.mix, false);
+            ParamKnob::new(cx, Data::params, |p| &p.focus, false);
         })
         .class("main")
         .child_space(Stretch(1.));
