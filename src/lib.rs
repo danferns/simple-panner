@@ -9,15 +9,11 @@ pub struct SimplePanner {
 
 #[derive(Params)]
 pub struct SimplePannerParams {
-    /// The parameter's ID is used to identify the parameter in the wrappred plugin API. As long as
-    /// these IDs remain constant, you can rename and reorder these fields as you wish. The
-    /// parameters are exposed to the host in the same order they were defined. In this case, this
-    /// gain parameter is stored as linear gain while the values are displayed in decibels.
     #[persist = "editor-state"]
     editor_state: Arc<ViziaState>,
     #[id = "pan"]
     pub pan: FloatParam,
-    #[id = "mix"]
+    #[id = "focus"]
     pub focus: FloatParam,
 }
 
@@ -111,7 +107,6 @@ impl Plugin for SimplePanner {
         _context: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
         for mut channel_samples in buffer.iter_samples() {
-            // Smoothing is optionally built into the parameters themselves
             let pan = self.params.pan.smoothed.next();
             let mix = self.params.focus.smoothed.next() / 2.;
 
@@ -137,7 +132,6 @@ impl ClapPlugin for SimplePanner {
     const CLAP_MANUAL_URL: Option<&'static str> = Some(Self::URL);
     const CLAP_SUPPORT_URL: Option<&'static str> = None;
 
-    // Don't forget to change these features
     const CLAP_FEATURES: &'static [ClapFeature] = &[ClapFeature::AudioEffect, ClapFeature::Stereo];
 }
 
