@@ -14,36 +14,18 @@ const STYLE: &str = r#"
     background-color: #222222;
 }
 
-.param_knob {
-    width: 150px;
-}
-
 label {
     child-space: 1s;
     font-size: 20;
     color: #c2c2c2;
 }
 
-knob {
-    width: 100px;
-    height: 100px;
+.pan .track {
+    color: #fca992;
 }
 
-knob .knob-track {
-    background-color: #92facf;
-}
-
-.track {
+.focus .track {
     color: #92facf;
-    background-color: #363636;
-}
-
-.tick {
-    background-color: #363636;
-}
-
-.tick {
-    color: #696969;
 }
 
 "#;
@@ -75,8 +57,8 @@ pub(crate) fn create(
         .build(cx);
 
         HStack::new(cx, |cx| {
-            ParamKnob::new(cx, Data::params, |p| &p.pan, true);
-            ParamKnob::new(cx, Data::params, |p| &p.focus, false);
+            ParamKnob::new(cx, Data::params, |p| &p.pan, true).class("pan");
+            ParamKnob::new(cx, Data::params, |p| &p.focus, false).class("focus");
         })
         .child_space(Stretch(0.25))
         .class("main");

@@ -9,6 +9,33 @@ pub enum ParamEvent {
     EndSetParam,
 }
 
+const STYLE: &str = r#"
+.param_knob {
+    width: 150px;
+}
+
+knob {
+    width: 100px;
+    height: 100px;
+}
+
+.tick {
+    color: #808080;
+    background-color: #363636; /* color of knob body */
+}
+
+.track {
+    color: #ababab;
+    background-color: #363636;
+}
+
+label {
+    child-space: 1s;
+    font-size: 20;
+    color: #808080;
+}
+
+"#;
 #[derive(Lens)]
 pub struct ParamKnob {
     param_base: ParamWidgetBase,
@@ -33,6 +60,7 @@ impl ParamKnob {
         .build(
             cx,
             ParamWidgetBase::build_view(params, params_to_param, move |cx, param_data| {
+                cx.add_stylesheet(STYLE).expect("Failed to add stylesheet");
                 VStack::new(cx, |cx| {
                     Knob::custom(
                         cx,
